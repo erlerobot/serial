@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 
 project(serial)
 
 find_package(ament_cmake REQUIRED)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+
 if(APPLE)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(FOUNDATION_LIBRARY Foundation)
@@ -15,22 +19,19 @@ add_library(${PROJECT_NAME} SHARED
 	src/impl/unix.cc
     src/impl/list_ports/list_ports_osx.cc
 )
-elseif(UNIX)    
-add_library(${PROJECT_NAME} SHARED
+elseif(UNIX)
+  add_library(${PROJECT_NAME} SHARED
     src/serial.cc
-	src/impl/unix.cc
-	src/impl/list_ports/list_ports_linux.cc
-)
+    src/impl/unix.cc
+    src/impl/list_ports/list_ports_linux.cc
+  )
 endif()
-
 
 if(APPLE)
     target_link_libraries(${PROJECT_NAME} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
-elseif(UNIX)    
+elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} rt pthread)
 endif()
-
-ament_export_libraries(${PROJECT_NAME})
 
 ament_package()
 
